@@ -47,7 +47,7 @@ public void keyPressed() {
 }
 
 public void draw() {
-  background(160);
+  background(165);
   if (mousePressed) {
     PVector mousePosition = new PVector(mouseX, mouseY);
     for (Animal animal : allAnimals) {
