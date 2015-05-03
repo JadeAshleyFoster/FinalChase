@@ -2,8 +2,8 @@ import java.util.Random;
 
 public class Wolf extends Animal {
   private Random random;
-  private final float wolfSeperation = 50; 
-  private final static float maxTurn = 0.2, maxSpeed = 0.8, size = 12, FOV = 275, safeRadius = 40; 
+  private final float wolfSeperation = 60, renderCircles = 10; 
+  private final static float maxTurn = 0.2, maxSpeed = 0.8, size = 3, FOV = 275, safeRadius = 40; 
   
   Wolf(PVector startPosition, Arena arena) {
     super(startPosition, maxTurn, maxSpeed, size, FOV, safeRadius, arena);
@@ -38,9 +38,13 @@ public class Wolf extends Animal {
   }
   
   public void render() {
-    fill(100);
-    ellipse(position.x, position.y, size, size);
-    noStroke();
+    float centre = 100;
+    float colourDiff = 60/renderCircles;
+    for (float i = renderCircles; i > 0; i--) {
+      float radius = size * i;
+      fill(centre + (i*colourDiff));
+      ellipse(position.x, position.y, radius, radius);
+      noStroke();
+    }  
   }
-  
 }

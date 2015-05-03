@@ -1,6 +1,6 @@
 public class Goat extends Animal {  
-  private final float goatSeperation = 15; 
-  private final static float maxTurn = 0.1, maxSpeed = 0.4, size = 10, FOV = 200, safeRadius = 80;
+  private final float goatSeperation = 50, renderCircles = 10;
+  private final static float maxTurn = 0.1, maxSpeed = 0.4, size = 3, FOV = 200, safeRadius = 80;
   
   Goat(PVector startPosition, Arena arena) {
     super(startPosition, maxTurn, maxSpeed, size, FOV, safeRadius, arena);
@@ -32,9 +32,14 @@ public class Goat extends Animal {
   }
   
   public void render() {
-    fill(240);
-    ellipse(position.x, position.y, size, size);
-    noStroke();
+    float centre = 240;
+    float colourDiff = 80/renderCircles;
+    for (float i = renderCircles; i > 0; i--) {
+      float radius = size * i;
+      fill(centre - (i*colourDiff));
+      ellipse(position.x, position.y, radius, radius);
+      noStroke();
+    }
   }
   
 }
