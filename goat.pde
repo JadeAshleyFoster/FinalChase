@@ -1,5 +1,5 @@
 public class Goat extends Animal {  
-  private final float goatSeperation = 20; 
+  private final float goatSeperation = 15; 
   private final static float maxTurn = 0.1, maxSpeed = 0.4, size = 10, FOV = 200, safeRadius = 80;
   
   Goat(PVector startPosition, Arena arena) {
