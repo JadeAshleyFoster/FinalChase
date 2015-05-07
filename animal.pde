@@ -1,10 +1,12 @@
 import java.util.TreeMap;
 
 public abstract class Animal {
+  protected final float maxLife = 100, lifeDecrease = 0.05, lifeIncrease = 5;
   protected PVector position, velocity, acceleration;
-  private float maxTurn, maxSpeed, size, FOV,safeRadius;
-  private final float edgeThreshold = 50;
+  private float maxTurn, maxSpeed, size, FOV, safeRadius, life, lastMated;
+  private final float edgeThreshold = 50, mateRadius = 50;
   protected Arena arena;
+  protected boolean mating;
   
   Animal(PVector startPosition, float maxTurn, float maxSpeed, float size, float FOV, float safeRadius, Arena arena) {
     random = new Random();
@@ -17,6 +19,9 @@ public abstract class Animal {
     this.FOV = FOV;
     this.safeRadius = safeRadius;
     this.arena = arena;
+    this.life = maxLife;
+    this.lastMated = 0;
+    this.mating = false;
   }
   
   protected void moveTowards(PVector desired, ArrayList<Animal> allAnimals) {
@@ -85,6 +90,7 @@ public abstract class Animal {
         desiredWithinArena.add(desiredAwayFromEdge);
       }
     }
+    desiredWithinArena.normalize();
     return desiredWithinArena;
   }
   
@@ -118,6 +124,10 @@ public abstract class Animal {
     return PVector.sub(position, point);
   }
   
+  private PVector getDesiredChaseOf(PVector point) {
+    return PVector.sub(point, position);
+  }
+  
   //Returns if a point is too close in regards to a given threshold
   public boolean isTooClose(PVector objectPosition, float threshold) {
     return position.dist(objectPosition) < threshold;
@@ -131,10 +141,21 @@ public abstract class Animal {
     }
     TreeMap<Float, Animal> distances = new TreeMap<Float, Animal>();
     for (Animal animal : animals) {
-      float distance = position.dist(animal.position);
-      distances.put(distance, animal);
+      if (animal != this) {
+        float distance = position.dist(animal.position);
+        distances.put(distance, animal);
+      }
     }
     return distances.get(distances.firstKey());
+  }
+  
+  protected boolean isAtSafeRadius(ArrayList<? extends Animal> animals) {
+    for (Animal animal : animals) {
+      if (isTooClose(animal.position, safeRadius)) {
+        return true;
+      }
+    }
+    return false;
   }
   
   protected float getInverseSquared(float r) {
@@ -143,6 +164,20 @@ public abstract class Animal {
   
   public void setPosition(PVector newPosition) {
     position = newPosition;
+  }
+  
+  public void addLife() {
+    if (life < maxLife) {
+      life += lifeIncrease;
+    }
+  }
+  
+  public void subLife() {
+    life -= lifeDecrease;
+  }
+  
+  public boolean isDead() {
+    return life < 0;
   }
   
 }

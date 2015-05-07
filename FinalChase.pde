@@ -3,21 +3,24 @@ import java.util.ArrayList;
 
 private Random random;
 private Arena arena;
-private ArrayList<Goat> goats;
-private ArrayList<Wolf> wolves;
+private ArrayList<Goat> goats, goatsToDie;
+private ArrayList<Wolf> wolves, wolvesToDie;
 private ArrayList<Animal> allAnimals;
-private final int numberOfWolves = 0;
-private final int numberOfGoats = 0;
+private int numberOfWolves;
+private int numberOfGoats;
 
 public void setup() {
-  size(1000, 800);
+  colorMode(HSB, 358, 100, 100);
+  size(1200, 800);
   this.random = new Random();
   this.arena = new Arena(width, height);
   this.allAnimals = new ArrayList<Animal>();
+  this.numberOfWolves = 0;
   this.wolves = new ArrayList<Wolf>();
   for (int i = 0; i < numberOfWolves; i++) {
     addWolf();
   }
+  this.numberOfGoats = 0;
   this.goats = new ArrayList<Goat>();
   for (int i = 0; i < numberOfGoats; i++) {
     addGoat();
@@ -36,6 +39,16 @@ public void addWolf() {
   allAnimals.add(newWolf);
 }
 
+public void removeWolf(Wolf wolf) {
+  wolves.remove(wolf);
+  allAnimals.remove(wolf);
+}
+
+public void removeGoat(Goat goat){
+  goats.remove(goat);
+  allAnimals.remove(goat);
+}
+
 public void keyPressed() {
   if (keyPressed) {
     if (key == 'g') {
@@ -47,7 +60,8 @@ public void keyPressed() {
 }
 
 public void draw() {
-  background(165);
+  background(358, 0, 95);
+  
   if (mousePressed) {
     PVector mousePosition = new PVector(mouseX, mouseY);
     for (Animal animal : allAnimals) {
@@ -56,13 +70,38 @@ public void draw() {
       }
     }
   }  
+  
+  numberOfWolves = wolves.size();
+  ArrayList<Wolf> wolvesToDie = new ArrayList<Wolf>();
   for (Wolf wolf : wolves) {
     wolf.update(wolves, goats, allAnimals);
     wolf.render();
+    if (wolf.isDead()) {
+      wolvesToDie.add(wolf);
+    }
   }
+  for (Wolf wolf : wolvesToDie) {
+    removeWolf(wolf);
+  }
+  
+  numberOfGoats = goats.size();
+  ArrayList<Goat> goatsToDie = new ArrayList<Goat>();
+  ArrayList<Goat> offspring = new ArrayList<Goat>();
   for (Goat goat : goats) {
     goat.update(wolves, goats, allAnimals);
     goat.render();
+    goat.beEatenBy(wolves);
+    if (goat.isDead()) {
+      goatsToDie.add(goat);
+    }
+    //offspring = goat.mate(goats, allAnimals);
   }
-
+  for (Goat goat : goatsToDie) {
+    removeGoat(goat);
+  }
+  /**
+  for (Goat goat : offspring) {
+    goats.add(goat);
+  }
+  **/
 }
